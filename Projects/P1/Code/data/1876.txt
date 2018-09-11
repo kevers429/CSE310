@@ -1,0 +1,17 @@
+1
+1876
+8
+Boston Red Caps	NL	70	2722	471	723	96	24	9	281	58	98	0	0	.266	.281	.328	.609
+Chicago White Stockings	NL	66	2748	624	926	131	32	8	441	70	45	0	0	.337	.353	.417	.770
+Philadelphia Athletics	NL	60	2387	378	646	79	35	7	249	27	36	0	0	.271	.279	.342	.621
+Louisville Grays	NL	69	2570	280	641	68	14	6	191	24	98	0	0	.249	.256	.294	.550
+Cincinnati Reds	NL	65	2372	238	555	51	12	4	132	41	136	0	0	.234	.247	.271	.518
+Hartford Dark Blues	NL	69	2664	429	711	96	22	2	265	39	78	0	0	.267	.277	.322	.599
+New York Mutuals	NL	57	2180	260	494	39	15	2	161	18	35	0	0	.227	.233	.261	.494
+St. Louis Brown Stockings	NL	64	2478	386	642	73	27	2	264	59	63	0	0	.259	.276	.313	.589
+5
+isort 1876 RBI decr
+isort 1876 Team incr
+isort 1876 SLG decr
+ifind 1876 BB max
+ifind 1876 BB min
