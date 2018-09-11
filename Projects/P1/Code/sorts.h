@@ -3,7 +3,7 @@
 #include <cstddef>
 
 template <class T>
-T* isort(T* arr, int n);
+T* isort(T* arr, int n, char* order);
 
 
 

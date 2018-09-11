@@ -9,6 +9,10 @@ int year;
 int numYears;
 int numTeams;
 int numCommands;
+int index;
+char* commandName;
+char* focusField;
+char* order;
 
 int main() {
   cin >> numYears;
@@ -22,6 +26,16 @@ int main() {
       all_stats[i] = {year, numTeams, tmp};
     }
   }
-  
+  cin >> numCommands;
+  getline(cin, commandName, ' ');
+  if(commandName == "isort") {
+    getline(cin, year, ' ');
+    while(all_stats[index].year != year) {
+      index++;
+    }
+    getline(cin, focusField, ' ');
+    getline(cin, order, ' ');
+    isort(all_stats[index].stats, all_stats[index].no_teams, order)
+  }
   return 0;
 }
