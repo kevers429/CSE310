@@ -1,20 +1,19 @@
 //Kevin Shannon
-//Templated implementation of InsertionSort
+//Implementation of InsertionSort
 
 #include "sorts.h"
 
-template <class T>
-T* isort(T* arr, int n, char* order) {
+mlb_stats* isort(mlb_stats* arr, int n, char* order, char* focusField) {
   for(int j = 1; j < n; j++){
-    T key = arr[j];
-    i = j - 1;
+    mlb_stats key = arr[j];
+    int i = j - 1;
     if(order == "incr") {
-      while(i >= 0 && arr[i] > key) {
+      while(i >= 0 && compare(arr[i], key, focusField) == 1) {
         arr[i+1] = arr[i];
         i--;
       }
     } else {
-      while(i >= 0 && arr[i] < key) {
+      while(i >= 0 && compare(arr[i], key, focusField) == -1) {
         arr[i+1] = arr[i];
         i--;
       }

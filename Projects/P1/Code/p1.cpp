@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "sorts.h"
-#include "defns.h"
 using namespace std;
 
 int year;
@@ -13,29 +12,29 @@ int index;
 char* commandName;
 char* focusField;
 char* order;
+annual_stats* all_stats;
 
 int main() {
   cin >> numYears;
   for(int i = 0; i < numYears; i++) {
     cin >> year >> numTeams;
-    annual_stats* all_stats;
+    mlb_stats* tmp;
     for(int j = 0; j < numTeams; j++) {
-      mlb_stats tmp;
-      cin >> tmp.Team >> tmp.League >> tmp.G >> tmp.AB >> tmp.R >> tmp.H >> tmp.B2 >> tmp.B3 >> tmp.HR;
-      cin >> tmp.RBI >> tmp.BB >> tmp.SO >> tmp.SB >> tmp.CS  >> tmp.AVG >> tmp.OBP >> tmp.SLG >> tmp.OPS;
-      all_stats[i] = {year, numTeams, tmp};
+      cin >> tmp[j].Team >> tmp[j].League >> tmp[j].G >> tmp[j].AB >> tmp[j].R >> tmp[j].H >> tmp[j].B2 >> tmp[j].B3 >> tmp[j].HR;
+      cin >> tmp[j].RBI >> tmp[j].BB >> tmp[j].SO >> tmp[j].SB >> tmp[j].CS  >> tmp[j].AVG >> tmp[j].OBP >> tmp[j].SLG >> tmp[j].OPS;
     }
+    all_stats[i] = annual_stats{year, numTeams, tmp};
   }
-  cin >> numCommands;
-  getline(cin, commandName, ' ');
+
+  cin >> numCommands >> commandName;
   if(commandName == "isort") {
-    getline(cin, year, ' ');
+    cin >> year;
     while(all_stats[index].year != year) {
       index++;
     }
-    getline(cin, focusField, ' ');
-    getline(cin, order, ' ');
-    isort(all_stats[index].stats, all_stats[index].no_teams, order)
+    cin >> focusField >> order;
+    isort(all_stats[index].stats, all_stats[index].no_teams, order, focusField);
   }
+
   return 0;
 }
