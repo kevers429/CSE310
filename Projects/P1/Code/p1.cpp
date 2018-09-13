@@ -36,17 +36,19 @@ int main() {
       while(all_stats[i].year != year) {
         i++;
       }
-      isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+      mlb_stats* sorted = isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+      printStats(sorted, all_stats[i].no_teams, field);
     }
     else {
       cin >> commandName >> startYear >> endYear >> field >> order;
       for(int i = 0; i < numYears; i++) {
         if(all_stats[i].year > startYear && all_stats[i].year < endYear) {
-          isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+          mlb_stats* sorted = isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+          printStats(sorted, all_stats[i].no_teams, field);
         }
       }
     }
   }
-
+  
   return 0;
 }
