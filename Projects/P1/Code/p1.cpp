@@ -6,10 +6,11 @@
 using namespace std;
 
 int year;
+int startYear;
+int endYear;
 int numYears;
 int numTeams;
 int numCommands;
-int index;
 char* commandName;
 char* field;
 char* order;
@@ -27,14 +28,24 @@ int main() {
     all_stats[i] = annual_stats{year, numTeams, tmp};
   }
 
-  cin >> numCommands >> commandName;
+  cin >> numCommands >> commandName >> ws;
   if(commandName == "isort") {
-    cin >> year;
-    while(all_stats[index].year != year) {
-      index++;
+    if(cin.peek() != 'r') {
+      cin >> year >> field >> order;
+      int i = 0;
+      while(all_stats[i].year != year) {
+        i++;
+      }
+      isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
     }
-    cin >> field >> order;
-    isort(all_stats[index].stats, all_stats[index].no_teams, order, field);
+    else {
+      cin >> commandName >> startYear >> endYear >> field >> order;
+      for(int i = 0; i < numYears; i++) {
+        if(all_stats[i].year > startYear && all_stats[i].year < endYear) {
+          isort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+        }
+      }
+    }
   }
 
   return 0;
