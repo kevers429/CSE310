@@ -14,6 +14,7 @@ int numCommands;
 char* commandName;
 char* field;
 char* order;
+char* select;
 annual_stats* all_stats;
 
 int main() {
@@ -49,6 +50,14 @@ int main() {
       }
     }
   }
-  
+  else if(commandName == "ifind") {
+    cin >> year >> field >> select;
+    int i = 0;
+    while(all_stats[i].year != year) {
+      i++;
+    }
+    find(all_stats[i].stats, all_stats[i].no_teams, field, select, "isort");
+  }
+
   return 0;
 }
