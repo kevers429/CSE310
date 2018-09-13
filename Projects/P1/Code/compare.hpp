@@ -2,8 +2,8 @@
 #define COMPARE_H
 #include <cstddef>
 
-int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
-  if(focusField == "Team") {
+int compare(mlb_stats s1, mlb_stats s2, const char* field) {
+  if(field == "Team") {
     if(s1.Team > s2.Team)
       return 1;
     else if(s1.Team < s2.Team)
@@ -11,7 +11,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "League") {
+  else if(field == "League") {
     if(s1.League > s2.League)
       return 1;
     else if(s1.League < s2.League)
@@ -19,7 +19,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "G") {
+  else if(field == "G") {
     if(s1.G > s2.G)
       return 1;
     else if(s1.G < s2.G)
@@ -27,7 +27,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "AB") {
+  else if(field == "AB") {
     if(s1.AB > s2.AB)
       return 1;
     else if(s1.AB < s2.AB)
@@ -35,7 +35,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "R") {
+  else if(field == "R") {
     if(s1.R > s2.R)
       return 1;
     else if(s1.R < s2.R)
@@ -43,7 +43,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "H") {
+  else if(field == "H") {
     if(s1.H > s2.H)
       return 1;
     else if(s1.H < s2.H)
@@ -51,7 +51,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "B2") {
+  else if(field == "B2") {
     if(s1.B2 > s2.B2)
       return 1;
     else if(s1.B2 < s2.B2)
@@ -59,7 +59,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "B3") {
+  else if(field == "B3") {
     if(s1.B3 > s2.B3)
       return 1;
     else if(s1.B3 < s2.B3)
@@ -67,7 +67,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "HR") {
+  else if(field == "HR") {
     if(s1.HR > s2.HR)
       return 1;
     else if(s1.HR < s2.HR)
@@ -75,7 +75,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "RBI") {
+  else if(field == "RBI") {
     if(s1.RBI > s2.RBI)
       return 1;
     else if(s1.RBI < s2.RBI)
@@ -83,7 +83,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "BB") {
+  else if(field == "BB") {
     if(s1.BB > s2.BB)
       return 1;
     else if(s1.BB < s2.BB)
@@ -91,7 +91,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "SO") {
+  else if(field == "SO") {
     if(s1.SO > s2.SO)
       return 1;
     else if(s1.SO < s2.SO)
@@ -99,7 +99,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "SB") {
+  else if(field == "SB") {
     if(s1.SB > s2.SB)
       return 1;
     else if(s1.SB < s2.SB)
@@ -107,7 +107,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "CS") {
+  else if(field == "CS") {
     if(s1.CS > s2.CS)
       return 1;
     else if(s1.CS < s2.CS)
@@ -115,7 +115,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "AVG") {
+  else if(field == "AVG") {
     if(s1.AVG > s2.AVG)
       return 1;
     else if(s1.AVG < s2.AVG)
@@ -123,7 +123,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "OBP") {
+  else if(field == "OBP") {
     if(s1.OBP > s2.OBP)
       return 1;
     else if(s1.OBP < s2.OBP)
@@ -131,7 +131,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "SLG") {
+  else if(field == "SLG") {
     if(s1.SLG > s2.SLG)
       return 1;
     else if(s1.SLG < s2.SLG)
@@ -139,7 +139,7 @@ int compare(mlb_stats s1, mlb_stats s2, char* focusField) {
     else
       return 0;
   }
-  else if(focusField == "OPS") {
+  else if(field == "OPS") {
     if(s1.OPS > s2.OPS)
       return 1;
     else if(s1.OPS < s2.OPS)

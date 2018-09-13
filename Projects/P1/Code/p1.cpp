@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "sorts.h"
+#include "find.hpp"
 using namespace std;
 
 int year;
@@ -10,7 +11,7 @@ int numTeams;
 int numCommands;
 int index;
 char* commandName;
-char* focusField;
+char* field;
 char* order;
 annual_stats* all_stats;
 
@@ -32,8 +33,8 @@ int main() {
     while(all_stats[index].year != year) {
       index++;
     }
-    cin >> focusField >> order;
-    isort(all_stats[index].stats, all_stats[index].no_teams, order, focusField);
+    cin >> field >> order;
+    isort(all_stats[index].stats, all_stats[index].no_teams, order, field);
   }
 
   return 0;
