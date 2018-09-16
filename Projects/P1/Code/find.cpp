@@ -1,11 +1,5 @@
 //Kevin Shannon
-
-#ifndef FIND_H
-#define FIND_H
-#include <cstddef>
-#include <iostream>
-#include "value.hpp"
-#include "printStat.hpp"
+#include "find.h"
 
 void find(mlb_stats* arr, int n, const char* field, const char* select, const char* sort) {
     if(sort == "isort") {
@@ -28,17 +22,28 @@ void find(mlb_stats* arr, int n, const char* field, const char* select, const ch
     }
     else if(select == "median") {
       int mindex = (n % 2 == 0) ? n/2 : (n-1)/2;
-      std::cout << value(arr[mindex], field) << std::endl;
+      if(field == "Team" || field == "League") {
+        std::cout << cvalue(arr[mindex], field) << std::endl;
+      }
+      else if(field == "AVG" || field == "OBP" || field == "SLG" || field == "OPS") {
+        std::cout << fvalue(arr[mindex], field) << std::endl;
+      }
+      else {
+        std::cout << ivalue(arr[mindex], field) << std::endl;
+      }
     }
     else if(select == "average") {
       float sum = 0;
       for(int i = 0; i < n; i++) {
-        sum = sum + value(arr[i], field);
+        if(field == "AVG" || field == "OBP" || field == "SLG" || field == "OPS") {
+          sum = sum + fvalue(arr[i], field);
+        }
+        else {
+          sum = sum + ivalue(arr[i], field);
+        }
       }
        std::cout << sum/n << std::endl;
     }
 
     return;
 }
-
-#endif
