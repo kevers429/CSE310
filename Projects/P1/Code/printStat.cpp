@@ -18,5 +18,5 @@ void printStats(mlb_stats* s, int n, const char* field) {
   for(int i = 0; i < n; i++) {
     printStat(s[i], field);
   }
-  std::cout << std::endl << std::endl;
+  std::cout << std::endl;
 }
