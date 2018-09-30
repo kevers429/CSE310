@@ -3,6 +3,7 @@
 #ifndef FIND_H
 #define FIND_H
 #include <cstddef>
+#include <cstring>
 #include <iostream>
 
 #include "sorts.h"

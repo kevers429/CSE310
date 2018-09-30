@@ -12,13 +12,12 @@ void merge(mlb_stats* arr, int lo, int mid, int hi, const char* order, const cha
     int i = lo, j = mid + 1, k = 0;
     while(i <= mid && j <= hi) {
       if(strcmp(order, "incr") == 0) {
-        if(compare(arr[i], arr[j], field) < 1)
+        if(compare(arr[i], arr[j], field) < 1) // arr[i] > arr[j]
           tmp[k++] = arr[i++];
         else
           tmp[k++] = arr[j++];
-      }
-      else {
-        if(compare(arr[i], arr[j], field) > -1)
+      } else { // not incr so must be decr
+        if(compare(arr[i], arr[j], field) > -1) //arr[i] < arr[j]
           tmp[k++] = arr[i++];
         else
           tmp[k++] = arr[j++];
