@@ -57,6 +57,28 @@ int main() {
         }
       }
     }
+    else if(strcmp(commandName, "msort") == 0) {
+      if((cin >> ws).peek() != 'r') {
+        cin >> year >> field >> order;
+        int i = 0;
+        while(all_stats[i].year != year) {
+          i++;
+        }
+        mlb_stats* sorted = msort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+        printStats(sorted, all_stats[i].no_teams, field);
+      }
+      else {
+        cin.ignore(6);
+        cin >> startYear >> endYear >> field >> order;
+        for(int i = 0; i < numYears; i++) {
+          if(all_stats[i].year >= startYear && all_stats[i].year <= endYear) {
+            mlb_stats* sorted = msort(all_stats[i].stats, all_stats[i].no_teams, order, field);
+            cout << all_stats[i].year << endl;
+            printStats(sorted, all_stats[i].no_teams, field);
+          }
+        }
+      }
+    }
     else if(strcmp(commandName, "ifind") == 0) {
       cin >> year >> field >> select;
       int i = 0;
@@ -64,6 +86,14 @@ int main() {
         i++;
       }
       find(all_stats[i].stats, all_stats[i].no_teams, field, select, "isort");
+    }
+    else if(strcmp(commandName, "mfind") == 0) {
+      cin >> year >> field >> select;
+      int i = 0;
+      while(all_stats[i].year != year) {
+        i++;
+      }
+      find(all_stats[i].stats, all_stats[i].no_teams, field, select, "msort");
     }
   }
   return 0;

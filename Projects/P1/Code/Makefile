@@ -1,4 +1,4 @@
-OBJS = value.o compare.o printStat.o isort.o find.o main.o
+OBJS = value.o compare.o printStat.o isort.o msort.o find.o main.o
 CC = g++
 DEBUG = -g
 CFLAGS = -c $(DEBUG)
@@ -8,7 +8,7 @@ p1 : $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o p1
 
 main.o : main.cpp value.h compare.h printStat.h sorts.h find.h
-	$(CC) $(CFLAGS) compare.cpp value.cpp find.cpp printStat.cpp isort.cpp main.cpp
+	$(CC) $(CFLAGS) main.cpp
 
 value.o : value.cpp value.h
 	$(CC) $(CFLAGS) value.cpp
@@ -21,6 +21,9 @@ printStat.o : printStat.cpp value.h
 
 isort.o : isort.cpp sorts.h compare.h
 	$(CC) $(CFLAGS) isort.cpp
+
+msort.o : msort.cpp sorts.h compare.h
+	$(CC) $(CFLAGS) msort.cpp
 
 find.o : find.cpp sorts.h printStat.h
 	$(CC) $(CFLAGS) find.cpp
