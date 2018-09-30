@@ -17,7 +17,9 @@ int compare(mlb_stats & s1, mlb_stats & s2, const char* field) {
     else
       return 0;
   }
-  else {
+  else if(strcmp(field, "G") == 0 || strcmp(field, "AB") == 0 || strcmp(field, "R") == 0 || strcmp(field, "H") == 0 ||
+          strcmp(field, "B2") == 0 || strcmp(field, "B3") == 0 || strcmp(field, "HR") == 0 || strcmp(field, "RBI") == 0 ||
+          strcmp(field, "BB") == 0 || strcmp(field, "SO") == 0 || strcmp(field, "SB") == 0 || strcmp(field, "CS") == 0) {
     if(ivalue(s1, field) > ivalue(s2, field))
       return 1;
     else if(ivalue(s1, field) < ivalue(s2, field))
@@ -25,4 +27,6 @@ int compare(mlb_stats & s1, mlb_stats & s2, const char* field) {
     else
       return 0;
   }
+  else
+    throw std::runtime_error("Error: no such field");
 }
