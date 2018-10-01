@@ -1,4 +1,3 @@
-//Kevin Shannon
 #include "find.h"
 
 void find(mlb_stats* arr, int n, const char* field, const char* select, const char* sort) {

@@ -26,7 +26,7 @@ int main() {
     cin >> year >> numTeams;
     mlb_stats* tmp = new mlb_stats[numTeams];
     for(int j = 0; j < numTeams; j++) { // parse stat data for each team into an array of mlb_stats
-      cin.ignore(10,'\n'); //ignore newline on the input stream
+      cin.ignore(10,'\n'); // ignore newline on the input stream
       cin.getline(tmp[j].Team, 50, '\t');
       cin >> tmp[j].League >> tmp[j].G >> tmp[j].AB >> tmp[j].R >> tmp[j].H >> tmp[j].B2 >> tmp[j].B3 >> tmp[j].HR >> tmp[j].RBI;
       cin >> tmp[j].BB >> tmp[j].SO >> tmp[j].SB >> tmp[j].CS  >> tmp[j].AVG >> tmp[j].OBP >> tmp[j].SLG >> tmp[j].OPS;
@@ -40,7 +40,7 @@ int main() {
     cin >> commandName;
     if(strcmp(commandName, "isort") == 0 || strcmp(commandName, "msort") == 0) { // let's sort
       mlb_stats* sorted; // array to store the sorted version of the stats
-      if((cin >> ws).peek() != 'r') { //peek to see if a range is upcoming
+      if((cin >> ws).peek() != 'r') { // peek to see if a range is upcoming
         cin >> year >> field >> order;
         startYear = endYear = year;
       } else {
@@ -79,6 +79,11 @@ int main() {
     }
     cout << endl;
   }
+  delete[] commandName;
+  delete[] field;
+  delete[] order;
+  delete[] select;
+  delete[] all_stats;
   return 0;
 }
 
