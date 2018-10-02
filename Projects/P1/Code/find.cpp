@@ -6,8 +6,8 @@ void find(mlb_stats* arr, int n, const char* field, const char* select, const ch
   else if(strcmp(sort, "mfind") == 0)
     arr = msort(arr, n, "incr", field); //msort
   if(strcmp(select, "max") == 0) {
-    int i = n-1; // start from the end with the higest value
-    while(compare(arr[i], arr[n-1], field) == 0 && i >= 0) { // print each thing with same value as highest
+    int i = n - 1; // start from the end with the higest value
+    while(compare(arr[i], arr[n - 1], field) == 0 && i >= 0) { // print each thing with same value as highest
       printStat(arr[i], field);
       i--;
     }

@@ -1,4 +1,6 @@
-//Kevin Shannon
+// Kevin Shannon
+// usage: make
+// ./p1 < file.txt
 
 #include <iostream>
 #include <stdexcept>
@@ -83,6 +85,10 @@ int main() {
   delete[] field;
   delete[] order;
   delete[] select;
+  for(int i = 0; i < numYears; i++) {
+    delete[] all_stats[i].stats;
+    all_stats[i].stats = NULL;
+  }
   delete[] all_stats;
   return 0;
 }
