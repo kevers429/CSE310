@@ -1,14 +1,18 @@
 #include <iostream>
 #include <string.h>
+#include "prime.cc"
 #include "defn.h"
 
 using namespace std;
 
 int indexOfCat(char* category, categories* apps, int size);
 tree* newNode(app_info info);
-tree* insert(tree* root, app_info key);
+tree* insertBST(tree* root, tree* key);
+int hashFunction(char* name, int buckets);
+void insertHSH(tree* node, hash_table_entry*& hashList, int buckets);
 
 categories* catList;
+hash_table_entry* hashList;
 float size, price;
 int numCategories, numApps;
 char category[CAT_NAME_LEN], app_name[APP_NAME_LEN], version[VERSION_LEN], units[UNIT_SIZE];
@@ -22,6 +26,11 @@ int main() {
     catList[i].root = NULL;
   }
   cin >> numApps;
+  int hashSize = 2 * numApps + 1;
+  while(!TestForPrime(hashSize)) {
+    hashSize = hashSize + 2;
+  }
+  hashList = new hash_table_entry[hashSize];
   for(int i = 0; i < numApps; i++) {
     cin.ignore(1,'\n');
     cin.getline(category, CAT_NAME_LEN);
@@ -34,7 +43,11 @@ int main() {
     strcpy(tmpApp.units, units);
     tmpApp.size = size;
     tmpApp.price = price;
-    catList[indexOfCat(category, catList, CAT_NAME_LEN)].root = insert(catList[indexOfCat(category, catList, CAT_NAME_LEN)].root, tmpApp);
+    tree* tmpNode = newNode(tmpApp);
+    int c = indexOfCat(category, catList, CAT_NAME_LEN);
+    catList[c].root = insertBST(catList[c].root, tmpNode);
+    cout << c << endl;
+    insertHSH(tmpNode, hashList, hashSize);
   }
   return 0;
 }
@@ -54,12 +67,31 @@ tree* newNode(app_info info) {
   return temp;
 }
 
-tree* insert(tree* node, app_info key) {
+tree* insertBST(tree* node, tree* key) {
   if(node == NULL)
-    return newNode(key);
-  if(strcmp(key.app_name, node->info.app_name) < 0)
-    node->left = insert(node->left, key);
-  else if(strcmp(key.app_name, node->info.app_name) > 0)
-    node->right = insert(node->right, key);
+    return key;
+  if(strcmp(key->info.app_name, node->info.app_name) < 0)
+    node->left = insertBST(node->left, key);
+  else if(strcmp(key->info.app_name, node->info.app_name) > 0)
+    node->right = insertBST(node->right, key);
   return node;
+}
+
+int hashFunction(char* name, int buckets) {
+  int sum = 0;
+  for(int i = 0; name[i] != '\0'; i++)
+    sum = sum + name[i];
+  return sum % buckets;
+}
+
+void insertHSH(tree* node, hash_table_entry*& hashList, int buckets) {
+  int i = hashFunction(node->info.app_name, buckets);
+  hash_table_entry* current = &hashList[i];
+  while(current->app_node != NULL) {
+    current->next = new hash_table_entry;
+    current = current->next;
+  }
+  strcpy(current->app_name, node->info.app_name);
+  current->app_node = node;
+  current->next = NULL;
 }

@@ -1,7 +1,7 @@
 #include	<stdio.h>
 
 #define	CAT_NAME_LEN	25
-#define	APP_NAME_LEN	50
+#define	APP_NAME_LEN	75
 #define	VERSION_LEN	10
 #define	UNIT_SIZE	3
 
@@ -28,4 +28,5 @@ struct tree{ // A binary search tree
 struct hash_table_entry{
    char app_name[ APP_NAME_LEN ]; // Name of the application
    struct tree *app_node; // Pointer to node in tree containing the application information
+	 struct hash_table_entry *next; // Pointer to next entry in the chain
 };
