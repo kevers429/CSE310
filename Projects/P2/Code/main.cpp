@@ -8,8 +8,8 @@ using namespace std;
 int indexOfCat(char* category, categories* apps, int size);
 tree* newNode(app_info info);
 tree* insertBST(tree* root, tree* key);
-int hashFunction(char* name, int buckets);
-void insertHSH(tree* node, hash_table_entry*& hashList, int buckets);
+int hashFunction(const char* name, int buckets);
+void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets);
 
 categories* catList;
 hash_table_entry* hashList;
@@ -46,7 +46,6 @@ int main() {
     tree* tmpNode = newNode(tmpApp);
     int c = indexOfCat(category, catList, CAT_NAME_LEN);
     catList[c].root = insertBST(catList[c].root, tmpNode);
-    cout << c << endl;
     insertHSH(tmpNode, hashList, hashSize);
   }
   return 0;
@@ -77,14 +76,14 @@ tree* insertBST(tree* node, tree* key) {
   return node;
 }
 
-int hashFunction(char* name, int buckets) {
+int hashFunction(const char* name, int buckets) {
   int sum = 0;
   for(int i = 0; name[i] != '\0'; i++)
     sum = sum + name[i];
   return sum % buckets;
 }
 
-void insertHSH(tree* node, hash_table_entry*& hashList, int buckets) {
+void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets) {
   int i = hashFunction(node->info.app_name, buckets);
   hash_table_entry* current = &hashList[i];
   while(current->app_node != NULL) {
