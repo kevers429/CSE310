@@ -2,7 +2,7 @@
 
 #define	CAT_NAME_LEN	25
 #define	APP_NAME_LEN	75
-#define	VERSION_LEN	10
+#define	VERSION_LEN	15
 #define	UNIT_SIZE	3
 
 struct categories{

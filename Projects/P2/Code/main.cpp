@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <iomanip>
 #include "prime.cc"
 #include "defn.h"
 
@@ -10,12 +11,17 @@ tree* newNode(app_info info);
 tree* insertBST(tree* root, tree* key);
 int hashFunction(const char* name, int buckets);
 void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets);
+app_info* findNode(hash_table_entry* hashList, const char* key, int buckets);
+void printApp(app_info* app);
+void printInOrder(tree* root);
+bool isFree(tree* root) ;
+void printFreeInOrder(tree* root);
 
 categories* catList;
 hash_table_entry* hashList;
 float size, price;
-int numCategories, numApps;
-char category[CAT_NAME_LEN], app_name[APP_NAME_LEN], version[VERSION_LEN], units[UNIT_SIZE];
+int numCategories, numApps, numCommands;
+char category[CAT_NAME_LEN], app_name[APP_NAME_LEN], version[VERSION_LEN], units[UNIT_SIZE], commandName[10];
 
 int main() {
   cin >> numCategories;
@@ -48,6 +54,44 @@ int main() {
     catList[c].root = insertBST(catList[c].root, tmpNode);
     insertHSH(tmpNode, hashList, hashSize);
   }
+  cin >> numCommands;
+  for(int i = 0; i < numCommands; i++) {
+    cin >> commandName;
+    if(strcmp(commandName, "find") == 0) {
+      if((cin >> ws).peek() == 'a') {
+        cin.ignore(4);
+        cin.getline(app_name, APP_NAME_LEN);
+        app_info* app = findNode(hashList, app_name, hashSize);
+        if(app != NULL)
+          printApp(app);
+        else
+          cout << "Application not found" << endl;
+      }
+      else if((cin >> ws).peek() == 'c') {
+        cin.ignore(9);
+        cin.getline(category, CAT_NAME_LEN);
+        int c = indexOfCat(category, catList, CAT_NAME_LEN);
+        if(c != -1)
+          printInOrder(catList[c].root);
+        else
+          cout << "Category not found" << endl;
+      }
+      else {
+        cin.ignore(100,'\n');
+        bool foundFree = false;
+        for(int i = 0; i < numCategories; i++) {
+          foundFree = (isFree(catList[i].root) || foundFree);
+          if(isFree(catList[i].root)) {
+            cout << catList[i].category << endl;
+            printFreeInOrder(catList[i].root);
+          }
+        }
+        if(!foundFree)
+          cout << "No free applications found" << endl;
+      }
+      cout << endl;
+    }
+  }
   return 0;
 }
 
@@ -76,10 +120,10 @@ tree* insertBST(tree* node, tree* key) {
   return node;
 }
 
-int hashFunction(const char* name, int buckets) {
+int hashFunction(const char* key, int buckets) {
   int sum = 0;
-  for(int i = 0; name[i] != '\0'; i++)
-    sum = sum + name[i];
+  for(int i = 0; key[i] != '\0'; i++)
+    sum = sum + key[i];
   return sum % buckets;
 }
 
@@ -93,4 +137,50 @@ void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets) {
   strcpy(current->app_name, node->info.app_name);
   current->app_node = node;
   current->next = NULL;
+}
+
+app_info* findNode(hash_table_entry* hashList, const char* key, int buckets) {
+  hash_table_entry* cur = &hashList[hashFunction(key, buckets)];
+  while(cur->app_node != NULL) {
+    if(strcmp(cur->app_node->info.app_name, key) == 0)
+      return &cur->app_node->info;
+    cur = cur->next;
+  }
+  return NULL;
+}
+
+void printApp(app_info* app) {
+  cout << std::setw(10) << std::left << "category:" << app->category << endl;
+  cout << std::setw(10) << std::left << "app name:" << app->app_name << endl;
+  cout << std::setw(10) << std::left << "version:" << app->version << endl;
+  cout << std::setw(10) << std::left << "size:" << app->size << endl;
+  cout << std::setw(10) << std::left << "units:" << app->units  << endl;
+  cout << std::setw(10) << std::left << "price:" << app->price << endl;
+}
+
+void printInOrder(tree* root) {
+  if(root == NULL)
+    return;
+  printInOrder(root->left);
+  cout << root->info.app_name << endl;
+  printInOrder(root->right);
+}
+
+bool isFree(tree* root) {
+  bool found = false;
+  if(root == NULL)
+    return false;
+  if(root->info.price == 0)
+    return true;
+  found = isFree(root->left) || isFree(root->right);
+  return found;
+}
+
+void printFreeInOrder(tree* root) {
+  if(root == NULL)
+    return;
+  printFreeInOrder(root->left);
+  if(root->info.price == 0)
+    cout << root->info.app_name << endl;
+  printFreeInOrder(root->right);
 }
