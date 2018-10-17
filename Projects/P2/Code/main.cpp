@@ -14,14 +14,17 @@ void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets);
 app_info* findNode(hash_table_entry* hashList, const char* key, int buckets);
 void printApp(app_info* app);
 void printInOrder(tree* root);
-bool isFree(tree* root) ;
-void printFreeInOrder(tree* root);
+bool isInPriceRange(tree* root, float lo, float hi);
+bool isInAppRange(tree* root, char* lo, char* hi);
+void printPriceRange(tree* root, float lo, float hi);
+void printAppRange(tree* root, char* lo, char* hi);
 
 categories* catList;
 hash_table_entry* hashList;
-float size, price;
+float size, price, f_hi, f_lo;
 int numCategories, numApps, numCommands;
-char category[CAT_NAME_LEN], app_name[APP_NAME_LEN], version[VERSION_LEN], units[UNIT_SIZE], commandName[10];
+char category[CAT_NAME_LEN], app_name[APP_NAME_LEN], version[VERSION_LEN], units[UNIT_SIZE], commandName[10], subCommand[10];
+char c_lo[CAT_NAME_LEN], c_hi[CAT_NAME_LEN];
 
 int main() {
   cin >> numCategories;
@@ -57,40 +60,69 @@ int main() {
   cin >> numCommands;
   for(int i = 0; i < numCommands; i++) {
     cin >> commandName;
+    //cout << "the command is " << commandName << endl;
     if(strcmp(commandName, "find") == 0) {
-      if((cin >> ws).peek() == 'a') {
-        cin.ignore(4);
-        cin.getline(app_name, APP_NAME_LEN);
+      cin >> subCommand;
+      if(strcmp(subCommand, "app") == 0) {
+        (cin >> ws).getline(app_name, APP_NAME_LEN);
         app_info* app = findNode(hashList, app_name, hashSize);
         if(app != NULL)
           printApp(app);
         else
           cout << "Application not found" << endl;
       }
-      else if((cin >> ws).peek() == 'c') {
-        cin.ignore(9);
-        cin.getline(category, CAT_NAME_LEN);
+      else if(strcmp(subCommand, "category") == 0) {
+        (cin >> ws).getline(category, CAT_NAME_LEN);
         int c = indexOfCat(category, catList, CAT_NAME_LEN);
         if(c != -1)
           printInOrder(catList[c].root);
         else
           cout << "Category not found" << endl;
       }
-      else {
+      else if(strcmp(subCommand, "price") == 0) {
         cin.ignore(100,'\n');
         bool foundFree = false;
         for(int i = 0; i < numCategories; i++) {
-          foundFree = (isFree(catList[i].root) || foundFree);
-          if(isFree(catList[i].root)) {
+          foundFree = (isInPriceRange(catList[i].root, 0, 0) || foundFree);
+          if(isInPriceRange(catList[i].root, 0, 0)) {
             cout << catList[i].category << endl;
-            printFreeInOrder(catList[i].root);
+            printPriceRange(catList[i].root, 0, 0);
+            cout << endl;
           }
         }
         if(!foundFree)
           cout << "No free applications found" << endl;
       }
-      cout << endl;
     }
+    else if(strcmp(commandName, "range") == 0) {
+      cin >> category;
+      cin >> subCommand;
+      //cout << "the subcommand is " << subCommand << endl;
+      int c = indexOfCat(category, catList, CAT_NAME_LEN);
+      if(strcmp(subCommand, "price") == 0) {
+        cin >> f_lo >> f_hi;
+        if(c != -1) {
+          if(isInPriceRange(catList[c].root, f_lo, f_hi))
+            printPriceRange(catList[c].root, f_lo, f_hi);
+          else
+            cout << "No applications found for given range" << endl;
+        }
+        else
+          cout << "Category not found" << endl;
+      }
+      else if(strcmp(subCommand, "app") == 0) {
+        cin >> c_lo >> c_hi;
+        if(c != -1) {
+          if(isInAppRange(catList[c].root, c_lo, c_hi))
+            printAppRange(catList[c].root, c_lo, c_hi);
+          else
+            cout << "Category not found" << endl;
+        }
+        else
+          cout << "Category not found" << endl;
+      }
+    }
+    cout << endl;
   }
   return 0;
 }
@@ -166,21 +198,40 @@ void printInOrder(tree* root) {
   printInOrder(root->right);
 }
 
-bool isFree(tree* root) {
+bool isInPriceRange(tree* root, float lo, float hi) {
   bool found = false;
   if(root == NULL)
     return false;
-  if(root->info.price == 0)
+  if(root->info.price >= lo && root->info.price <= hi)
     return true;
-  found = isFree(root->left) || isFree(root->right);
+  found = isInPriceRange(root->left, lo, hi) || isInPriceRange(root->right, lo, hi);
   return found;
 }
 
-void printFreeInOrder(tree* root) {
+bool isInAppRange(tree* root, char* lo, char* hi) {
+  bool found = false;
+  if(root == NULL)
+    return false;
+  if(strcmp(root->info.app_name, lo) > -1 && strcmp(root->info.app_name, hi) < 1)
+    return true;
+  found = isInAppRange(root->left, lo, hi) || isInAppRange(root->right, lo, hi);
+  return found;
+}
+
+void printPriceRange(tree* root, float lo, float hi) {
   if(root == NULL)
     return;
-  printFreeInOrder(root->left);
-  if(root->info.price == 0)
+  printPriceRange(root->left, lo, hi);
+  if(root->info.price >= lo && root->info.price <= hi)
     cout << root->info.app_name << endl;
-  printFreeInOrder(root->right);
+  printPriceRange(root->right, lo, hi);
+}
+
+void printAppRange(tree* root, char* lo, char* hi) {
+  if(root == NULL)
+    return;
+  printAppRange(root->left, lo, hi);
+  if(strcmp(root->info.app_name, lo) > -1 && strcmp(root->info.app_name, hi) < 1)
+    cout << root->info.app_name << endl;
+  printAppRange(root->right, lo, hi);
 }
