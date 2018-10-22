@@ -1,3 +1,6 @@
+//Kevin Shannon
+//usage: ./p2 < file
+
 #include <iostream>
 #include <string.h>
 #include <iomanip>
@@ -9,10 +12,10 @@ using namespace std;
 int indexOfCat(char* category, categories* apps, int size);
 tree* newNode(app_info info);
 tree* insertBST(tree* root, tree* key);
-tree* deleteBST(tree* root, char* key);
+tree* deleteBST(tree* root, tree* target);
 tree* minValueNode(tree* node);
 int hashFunction(const char* name, int buckets);
-void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets);
+hash_table_entry* insertHSH(tree*& node, hash_table_entry* head, int buckets);
 hash_table_entry* findNode(hash_table_entry* hashList, const char* key, int buckets);
 void printApp(app_info* app);
 void printInOrder(tree* root);
@@ -58,7 +61,8 @@ int main() {
     tree* tmpNode = newNode(tmpApp); //pointer to a tempory node containing our tmp app
     int c = indexOfCat(category, catList, CAT_NAME_LEN); //find cat index
     catList[c].root = insertBST(catList[c].root, tmpNode); //insert the node into the BST
-    insertHSH(tmpNode, hashList, hashSize); //insert node into Hash Table
+    int h = hashFunction(tmpNode->info.app_name, hashSize);
+    hashList[h] = *(insertHSH(tmpNode, &hashList[h], hashSize)); //insert node into Hash Table
   }
   cin >> numCommands;
   for(int i = 0; i < numCommands; i++) {
@@ -68,7 +72,7 @@ int main() {
       if(strcmp(subCommand, "app") == 0) {
         (cin >> ws).getline(app_name, APP_NAME_LEN);
         hash_table_entry* node = findNode(hashList, app_name, hashSize); //find the given app in the hash table and point to it
-        if(node->app_node->info.app_name != NULL) //print it if it exists
+        if(node != NULL) //print it if it exists
           printApp(&node->app_node->info);
         else
           cout << "Application not found" << endl;
@@ -95,6 +99,7 @@ int main() {
         if(!foundFree)
           cout << "No free applications found" << endl;
       }
+      cout << endl;
     }
     else if(strcmp(commandName, "range") == 0) {
       cin >> category;
@@ -117,21 +122,26 @@ int main() {
           if(isInAppRange(catList[c].root, c_lo, c_hi))
             printAppRange(catList[c].root, c_lo, c_hi); //print everything in name range
           else
-            cout << "Category not found" << endl;
+            cout << "No applications found for given range" << endl;
         }
         else
           cout << "Category not found" << endl;
       }
+      cout << endl;
     }
-    else if(strcmp(commandName, "delete") == 0) { //WIP
+    else if(strcmp(commandName, "delete") == 0) {
       cin >> category;
       (cin >> ws).getline(app_name, APP_NAME_LEN);
       hash_table_entry* tableNode = findNode(hashList, app_name, hashSize);
       hash_table_entry* headNode = &hashList[hashFunction(app_name, hashSize)];
-      deleteLinked(&headNode, &tableNode);
-      deleteBST(catList[indexOfCat(category, catList, CAT_NAME_LEN)].root, app_name);
+      if(tableNode != NULL) {
+        deleteLinked(&headNode, &tableNode);
+        int c = indexOfCat(category, catList, CAT_NAME_LEN);
+        catList[c].root = deleteBST(catList[c].root, tableNode->app_node);
+      }
+      else
+        cout << "Application not found; unable to delete" << endl;
     }
-    cout << endl;
   }
   return 0;
 }
@@ -156,32 +166,34 @@ tree* insertBST(tree* node, tree* key) { //returns pointer to root of the tree w
     return key;
   if(strcmp(key->info.app_name, node->info.app_name) < 0) //key < node
     node->left = insertBST(node->left, key);
-  else if(strcmp(key->info.app_name, node->info.app_name) > 0) key > node
+  else if(strcmp(key->info.app_name, node->info.app_name) > 0) //key > node
     node->right = insertBST(node->right, key);
   return node;
 }
 
-tree* deleteBST(tree* root, char* key) { //returns pointer to root of the tree with the node deleted
+tree* deleteBST(tree* root, tree* target) { //returns pointer to the position of the node that was deleted after deleting it
   if(root == NULL)
     return root;
-  if(strcmp(key, root->info.app_name) == -1) //key < root
-    root->left = deleteBST(root->left, key);
-  else if(strcmp(key, root->info.app_name) == 1) //key > root
-    root->right = deleteBST(root->right, key);
+  if(strcmp(target->info.app_name, root->info.app_name) < 0)
+    root->left = deleteBST(root->left, target);
+  else if(strcmp(target->info.app_name, root->info.app_name) > 0)
+    root->right = deleteBST(root->right, target);
   else {
     if(root->left == NULL) {
-      tree* temp = root->right;
-      delete root;
-      return temp;
+      tree* temp = root;
+      root = root->right;
+      delete temp;
     }
     else if(root->right == NULL) {
-      tree* temp = root->left;
-      delete root;
-      return temp;
+      tree* temp = root;
+      root = root->left;
+      delete temp;
     }
-    tree* temp = minValueNode(root->right);
-    root->info = temp->info;
-    root->right = deleteBST(root->right, temp->info.app_name);
+    else {
+      tree* temp = minValueNode(root->right);
+      root->info = temp->info;
+      root->right = deleteBST(root->right, target);
+    }
   }
   return root;
 }
@@ -200,24 +212,31 @@ int hashFunction(const char* key, int buckets) { //returns index of key in the h
   return sum % buckets;
 }
 
-void insertHSH(tree*& node, hash_table_entry*& hashList, int buckets) { //inserts new element into the given hash table
-  int i = hashFunction(node->info.app_name, buckets);
-  hash_table_entry* current = &hashList[i];
-  while(current->app_node != NULL) {
-    current->next = new hash_table_entry;
+hash_table_entry* insertHSH(tree*& node, hash_table_entry* head, int buckets) { //inserts new element into the given hash table
+  hash_table_entry* newNode = new hash_table_entry;
+  hash_table_entry* current = head;
+  strcpy(newNode->app_name, node->info.app_name);
+  newNode->app_node = node;
+  newNode->next = NULL;
+  if(current->app_node == NULL) {
+    head = newNode;
+    return head;
+  }
+  while(current->next != NULL) {
     current = current->next;
   }
-  strcpy(current->app_name, node->info.app_name);
-  current->app_node = node;
-  current->next = NULL;
+  current->next = newNode;
+  return head;
 }
 
 hash_table_entry* findNode(hash_table_entry* hashList, const char* key, int buckets) { //return a pointer to a hash_table_entry with the desired key
-  hash_table_entry* cur = &hashList[hashFunction(key, buckets)];
-  while(cur->app_node != NULL) {
-    if(strcmp(cur->app_node->info.app_name, key) == 0)
-      return cur;
-    cur = cur->next;
+  hash_table_entry* current = &hashList[hashFunction(key, buckets)];
+  if(current->app_node == NULL)
+    return NULL;
+  while(current != NULL) {
+    if(strcmp(current->app_node->info.app_name, key) == 0)
+      return current;
+    current = current->next;
   }
   return NULL;
 }
