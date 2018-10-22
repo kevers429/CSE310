@@ -93,7 +93,6 @@ int main() {
           if(isInPriceRange(catList[i].root, 0, 0)) { //if there exists at least one app with price is 0
             cout << catList[i].category << endl;
             printPriceRange(catList[i].root, 0, 0); //print everything in category with price = 0
-            cout << endl;
           }
         }
         if(!foundFree)
@@ -132,12 +131,12 @@ int main() {
     else if(strcmp(commandName, "delete") == 0) {
       cin >> category;
       (cin >> ws).getline(app_name, APP_NAME_LEN);
-      hash_table_entry* tableNode = findNode(hashList, app_name, hashSize);
-      hash_table_entry* headNode = &hashList[hashFunction(app_name, hashSize)];
-      if(tableNode != NULL) {
-        deleteLinked(&headNode, &tableNode);
+      hash_table_entry* tableNode = findNode(hashList, app_name, hashSize); //points to node with app_name in hashList
+      hash_table_entry* headNode = &hashList[hashFunction(app_name, hashSize)];  //points to head of hashlist at it's index
+      if(tableNode != NULL) { //the node actually exists
+        deleteLinked(&headNode, &tableNode); //delete entry from hashList
         int c = indexOfCat(category, catList, CAT_NAME_LEN);
-        catList[c].root = deleteBST(catList[c].root, tableNode->app_node);
+        catList[c].root = deleteBST(catList[c].root, tableNode->app_node); //delete entry from binary search tree
       }
       else
         cout << "Application not found; unable to delete" << endl;
@@ -148,7 +147,7 @@ int main() {
 
 int indexOfCat(char* category, categories* cats, int size) { //returns index in categories array of specified category, -1 if not found
   for(int i = 0; i < size; i++) {
-    if(strcmp(cats[i].category, category) == 0)
+    if(strcmp(cats[i].category, category) == 0) //loops through array of categories, incrementing i until the category is found
       return i;
   }
   return -1;
@@ -156,43 +155,43 @@ int indexOfCat(char* category, categories* cats, int size) { //returns index in 
 
 tree* newNode(app_info info) { //returns a pointer to a new tree node containg specified app info
   tree* temp =  new tree;
-  temp->info = info;
+  temp->info = info; //create new tempory tree node and return pointer to it
   temp->left = temp->right = NULL;
   return temp;
 }
 
 tree* insertBST(tree* node, tree* key) { //returns pointer to root of the tree with the node inserted
-  if(node == NULL)
+  if(node == NULL) //base case
     return key;
   if(strcmp(key->info.app_name, node->info.app_name) < 0) //key < node
-    node->left = insertBST(node->left, key);
+    node->left = insertBST(node->left, key); //recurse left
   else if(strcmp(key->info.app_name, node->info.app_name) > 0) //key > node
-    node->right = insertBST(node->right, key);
+    node->right = insertBST(node->right, key); //recurse right
   return node;
 }
 
-tree* deleteBST(tree* root, tree* target) { //returns pointer to the position of the node that was deleted after deleting it
+tree* deleteBST(tree* root, tree* target) { //returns pointer to the position of the root after deleting it target node
   if(root == NULL)
     return root;
-  if(strcmp(target->info.app_name, root->info.app_name) < 0)
+  if(strcmp(target->info.app_name, root->info.app_name) < 0) //target is in left subtree
     root->left = deleteBST(root->left, target);
-  else if(strcmp(target->info.app_name, root->info.app_name) > 0)
+  else if(strcmp(target->info.app_name, root->info.app_name) > 0) //target is in right subrtree
     root->right = deleteBST(root->right, target);
-  else {
-    if(root->left == NULL) {
+  else { //root = target
+    if(root->left == NULL) { //one right child
       tree* temp = root;
-      root = root->right;
+      root = root->right; //can simply delete target and reach the node around
       delete temp;
     }
-    else if(root->right == NULL) {
+    else if(root->right == NULL) { //one left child
       tree* temp = root;
-      root = root->left;
+      root = root->left; //can simply delete target and reach the node around
       delete temp;
     }
-    else {
-      tree* temp = minValueNode(root->right);
-      root->info = temp->info;
-      root->right = deleteBST(root->right, target);
+    else { //two children
+      tree* temp = minValueNode(root->right); //get pointer to minimum element in right subtree
+      root->info = temp->info; //replace target with it
+      root->right = deleteBST(root->right, target); //recurse on right sub tree
     }
   }
   return root;
@@ -200,7 +199,7 @@ tree* deleteBST(tree* root, tree* target) { //returns pointer to the position of
 
 tree* minValueNode(tree* node) { //returns smallest node in subtree
   tree* current = node;
-  while (current->left != NULL)
+  while (current->left != NULL) //go left till we can't no more
     current = current->left;
   return current;
 }
@@ -208,7 +207,7 @@ tree* minValueNode(tree* node) { //returns smallest node in subtree
 int hashFunction(const char* key, int buckets) { //returns index of key in the hashtable using a hash function
   int sum = 0;
   for(int i = 0; key[i] != '\0'; i++)
-    sum = sum + key[i];
+    sum = sum + key[i]; //add together ascii values of each character in string
   return sum % buckets;
 }
 
@@ -216,26 +215,44 @@ hash_table_entry* insertHSH(tree*& node, hash_table_entry* head, int buckets) { 
   hash_table_entry* newNode = new hash_table_entry;
   hash_table_entry* current = head;
   strcpy(newNode->app_name, node->info.app_name);
-  newNode->app_node = node;
+  newNode->app_node = node; //initialize new node
   newNode->next = NULL;
-  if(current->app_node == NULL) {
+  if(current->app_node == NULL) { //head is null
     head = newNode;
-    return head;
+    return head; //return the new node
   }
   while(current->next != NULL) {
-    current = current->next;
+    current = current->next; //go to last node
   }
-  current->next = newNode;
+  current->next = newNode; //new last node will be our new node
   return head;
+}
+
+void deleteLinked(hash_table_entry** head_ref, hash_table_entry** del_ref) { //removes element from the hashtable
+  if(*head_ref == NULL) //head = null
+    return;
+  hash_table_entry* temp = *head_ref;
+  if(head_ref == del_ref) { //target is at head
+    *head_ref = temp->next; //set head to next
+    delete temp; //delete target
+    return;
+  }
+  for(int i = 0; temp != NULL && temp->next != *del_ref; i++) //loop until before target
+    temp = temp->next;
+  if(temp == NULL || temp->next == NULL)
+    return;
+  hash_table_entry* next = temp->next->next; //skip target
+  delete temp->next; //delete target
+  temp->next = next; //update next pointer
 }
 
 hash_table_entry* findNode(hash_table_entry* hashList, const char* key, int buckets) { //return a pointer to a hash_table_entry with the desired key
   hash_table_entry* current = &hashList[hashFunction(key, buckets)];
   if(current->app_node == NULL)
-    return NULL;
+    return NULL; //bin is empty
   while(current != NULL) {
     if(strcmp(current->app_node->info.app_name, key) == 0)
-      return current;
+      return current; //loop through until we find it
     current = current->next;
   }
   return NULL;
@@ -294,22 +311,4 @@ void printAppRange(tree* root, char* lo, char* hi) { //prints BST in order if th
   if(strcmp(root->info.app_name, lo) > -1 && strcmp(root->info.app_name, hi) < 1)
     cout << root->info.app_name << endl;
   printAppRange(root->right, lo, hi);
-}
-
-void deleteLinked(hash_table_entry** head_ref, hash_table_entry** del_ref) { //removes element from the hashtable
-  if(*head_ref == NULL)
-    return;
-  hash_table_entry* temp = *head_ref;
-  if(head_ref == del_ref) {
-    *head_ref = temp->next;
-    delete temp;
-    return;
-  }
-  for(int i = 0; temp != NULL && temp->next != *del_ref; i++)
-    temp = temp->next;
-  if(temp == NULL || temp->next == NULL)
-    return;
-  hash_table_entry* next = temp->next->next;
-  delete temp->next;
-  temp->next = next;
 }
