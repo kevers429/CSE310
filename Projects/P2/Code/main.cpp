@@ -142,6 +142,8 @@ int main() {
         cout << "Application not found; unable to delete" << endl;
     }
   }
+  delete[] hashList;
+  delete[] catList;
   return 0;
 }
 

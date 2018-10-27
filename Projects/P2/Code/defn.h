@@ -23,10 +23,22 @@ struct tree{ // A binary search tree
 	struct app_info info; // Information about the application
 	struct tree *left;  // Pointer to the left subtree
 	struct tree *right;  // Pointer to the right subtree
+
+	void recursiveDelete(tree* node) {
+		if(node) {
+			recursiveDelete(node->left);
+			recursiveDelete(node->right);
+			delete node;
+		}
+	}
+
+	~tree() {
+		recursiveDelete(this);
+	}
 };
 
 struct hash_table_entry{
-   char app_name[ APP_NAME_LEN ]; // Name of the application
-   struct tree *app_node; // Pointer to node in tree containing the application information
-	 struct hash_table_entry *next; // Pointer to next entry in the chain
+	char app_name[ APP_NAME_LEN ]; // Name of the application
+	struct tree *app_node; // Pointer to node in tree containing the application information
+	struct hash_table_entry *next; // Pointer to next entry in the chain
 };
