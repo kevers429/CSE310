@@ -24,6 +24,12 @@ bool isInAppRange(tree* root, char* lo, char* hi);
 void printPriceRange(tree* root, float lo, float hi);
 void printAppRange(tree* root, char* lo, char* hi);
 void deleteLinked(hash_table_entry** head_ref, hash_table_entry** del_ref);
+void destroyAllBST(categories* cats, int size);
+void recursiveDestroy(tree* root);
+void BSTinfo(tree* root);
+int findHieght(tree* root);
+int findNumNodes(tree* root);
+void chainGang(hash_table_entry** head_ref, int buckets);
 
 categories* catList;
 hash_table_entry* hashList;
@@ -142,8 +148,17 @@ int main() {
         cout << "Application not found; unable to delete" << endl;
     }
   }
-  delete[] hashList;
-  delete[] catList;
+  for(int i = 0; i < numCategories; i++) {
+    if(catList[i].root != NULL) {
+      cout << catList[i].category << endl << setw(58) << left << "App Name" << setw(12) << left << "L_Hieght" << setw(12) << left << "L_Nodes";
+      cout << setw(12) << left << "R_Hieght" << setw(12) << left << "R_Nodes" << endl;
+      BSTinfo(catList[i].root);
+      cout << endl;
+    }
+  }
+  chainGang(&hashList, hashSize);
+  cout << endl << "Load Factor: " << float(numApps)/hashSize << endl;
+  destroyAllBST(catList, numCategories);
   return 0;
 }
 
@@ -313,4 +328,69 @@ void printAppRange(tree* root, char* lo, char* hi) { //prints BST in order if th
   if(strcmp(root->info.app_name, lo) > -1 && strcmp(root->info.app_name, hi) < 1)
     cout << root->info.app_name << endl;
   printAppRange(root->right, lo, hi);
+}
+
+void destroyAllBST(categories* cats, int size) {
+  for(int i = 0; i < size; i++)
+    recursiveDestroy(cats[i].root);
+}
+
+void recursiveDestroy(tree* root) {
+  if(root != NULL) {
+    recursiveDestroy(root->left); //delete in post-order
+    recursiveDestroy(root->right);
+    delete root;
+  }
+}
+
+void BSTinfo(tree* root) {
+  if(root == NULL)
+    return;
+  BSTinfo(root->left);
+  cout << setw(58) << left << root->info.app_name << setw(12) << left << findHieght(root->left) << setw(12) << left << findNumNodes(root->left);
+  cout << setw(12) << left << findHieght(root->right)  << setw(12) << left << findNumNodes(root->right) << endl;
+  BSTinfo(root->right);
+}
+
+int findHieght(tree* root) {
+  if(root == NULL)
+    return 0;
+  int leftHieght = findHieght(root->left);
+  int rightHieght = findHieght(root->right);
+  if(leftHieght > rightHieght)
+    return(leftHieght + 1);
+  else
+    return(rightHieght + 1);
+}
+
+int findNumNodes(tree* root) {
+  if(root == NULL)
+    return 0;
+  int sum = 1;
+  if(root->left != NULL)
+    sum += findNumNodes(root->left);
+  if(root->right != NULL)
+    sum += findNumNodes(root->right);
+  return sum;
+}
+
+void chainGang(hash_table_entry** head_ref, int buckets) {
+  int chainStats[10] = {};
+  int longest = 0;
+  int len;
+  for(int i = 0; i < buckets; i++) {
+    hash_table_entry* current = (*head_ref+i);
+    len = 0;
+    if(current->app_node != NULL) {
+      while(current != NULL) {
+        len++;
+        current = current->next;
+      }
+      if(len > longest)
+        longest = len;
+    }
+    chainStats[len]++;
+  }
+  for(int i = 0; i <= longest; i++)
+    cout << "length " << i << ": " << chainStats[i] << endl;
 }

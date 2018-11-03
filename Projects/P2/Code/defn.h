@@ -23,18 +23,6 @@ struct tree{ // A binary search tree
 	struct app_info info; // Information about the application
 	struct tree *left;  // Pointer to the left subtree
 	struct tree *right;  // Pointer to the right subtree
-
-	void recursiveDelete(tree* node) {
-		if(node) {
-			recursiveDelete(node->left);
-			recursiveDelete(node->right);
-			delete node;
-		}
-	}
-
-	~tree() {
-		recursiveDelete(this);
-	}
 };
 
 struct hash_table_entry{
