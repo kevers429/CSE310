@@ -4,6 +4,7 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
+#include <cstddef>
 #include "Node.h"
 
 template <class T>
@@ -13,12 +14,11 @@ class LinkedList {
     Node<T>* head;
     Node<T>* tail;
     int size;
-    T id;
   public:
     LinkedList();
     ~LinkedList();
     void Append(T data);
-    bool Exists(T data);
+    bool Contains(T data);
     Node<T>* Find(T data);
     int IndexOf(T data);
     T RetrieveFront();
@@ -37,7 +37,6 @@ LinkedList<T>::LinkedList() {
   head = NULL;
   tail = NULL;
   size = 0;
-  id = -1;
 }
 
 template <class T>
@@ -59,12 +58,11 @@ void LinkedList<T>::Append(T data) {
 }
 
 template <class T>
-bool LinkedList<T>::Exists(T data) {
+bool LinkedList<T>::Contains(T data) {
   Node<T>* current = head;
   while(current != NULL) {
-    if(current->getData() == data) {
+    if(current->getData() == data)
       return true;
-    }
     current = current->getNext();
   }
   return false;
@@ -75,7 +73,7 @@ Node<T>* LinkedList<T>::Find(T data) {
   Node<T>* current = head;
   while(current != NULL) {
     if(current->getData() == data)
-    return current;
+      return current;
     current = current->getNext();
   }
   return NULL;
@@ -87,7 +85,7 @@ int LinkedList<T>::IndexOf(T data) {
   int count = 0;
   while(current != NULL) {
     if(current->getData() == data)
-    return count;
+      return count;
     current = current->getNext();
     count++;
   }
@@ -108,18 +106,8 @@ template <class T>
 T LinkedList<T>::Retrieve(int index) {
   Node<T>* current = head;
   for(int i = 0; i < index; i++)
-  current = current->getNext();
+    current = current->getNext();
   return current->getData();
-}
-
-template <class T>
-T LinkedList<T>::getID() {
-  return id;
-}
-
-template <class T>
-void LinkedList<T>::setID(T id) {
-  this->id = id;
 }
 
 template <class T>
