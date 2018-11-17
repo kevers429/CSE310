@@ -21,16 +21,16 @@ int main() {
   cin >> numCommands;
   for(int i = 0; i < numCommands; i++) {
     cin >> commandName;
-    if(commandName == "degree-distribution") {
+    if(commandName == "degree-distribution")
       network->Histogram();
-    }
-    else if(commandName == "components") {
+    else if(commandName == "components")
       network->Components();
-    }
     else if(commandName == "shortest-path") {
       cin >> u >> v;
       cout << network->ShortestPath(u, v) << endl;
     }
+    else if(commandName == "diameter")
+      cout << network->Diameter() << endl;
   }
   return 0;
 }

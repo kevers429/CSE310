@@ -27,6 +27,7 @@ class AdjList {
     void Histogram();
     void Components();
     int ShortestPath(int u, int v);
+    int Diameter();
 };
 
 #endif

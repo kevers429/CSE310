@@ -121,3 +121,35 @@ void AdjList::DFS(int u, bool** visited, int &numNodes) {
       DFS(adjList[u]->Retrieve(i), visited, numNodes);
   }
 }
+
+int AdjList::Diameter() {
+  int** dist = new int*[vertices];
+  for(int i = 0; i < vertices; i++)
+    dist[i] = new int[vertices];
+  int max = 0;
+  for(int i = 0; i < vertices; i++) {
+    for(int j = 0; j < vertices; j++)
+      dist[i][j] = INT_MAX;
+    for(int j = 0; j < adjList[i]->Length(); j++)
+      dist[i][adjList[i]->Retrieve(j)] = 1;
+  }
+  for(int i = 0; i < vertices; i++)
+      dist[i][i] = 0;
+  for(int k = 0; k < vertices; k++) {
+    for(int i = 0; i < vertices; i++) {
+      for(int j = 0; j < vertices; j++) {
+        if(dist[i][j] > dist[i][k] + dist[k][j])
+          dist[i][j] = dist[i][k] + dist[k][j];
+      }
+    }
+  }
+  for(int i = 0; i < vertices; i++) {
+    for(int j = 0; j < vertices; j++) {
+      if(dist[i][j] > max)
+        max = dist[i][j];
+    }
+  }
+  for(int i = 0; i < vertices; i++)
+    delete[] dist[i];
+  return max;
+}
