@@ -19,13 +19,7 @@ class LinkedList {
     ~LinkedList();
     void Append(T data);
     bool Contains(T data);
-    Node<T>* Find(T data);
-    int IndexOf(T data);
-    T RetrieveFront();
-    T RetrieveEnd();
     T Retrieve(int index);
-    T getID();
-    void setID(T id);
     void Empty();
     int Length();
 };
@@ -66,40 +60,6 @@ bool LinkedList<T>::Contains(T data) {
     current = current->getNext();
   }
   return false;
-}
-
-template <class T>
-Node<T>* LinkedList<T>::Find(T data) {
-  Node<T>* current = head;
-  while(current != NULL) {
-    if(current->getData() == data)
-      return current;
-    current = current->getNext();
-  }
-  return NULL;
-}
-
-template <class T>
-int LinkedList<T>::IndexOf(T data) {
-  Node<T>* current = head;
-  int count = 0;
-  while(current != NULL) {
-    if(current->getData() == data)
-      return count;
-    current = current->getNext();
-    count++;
-  }
-  return -1;
-}
-
-template <class T>
-T LinkedList<T>::RetrieveFront() {
-  return head->getData();
-}
-
-template <class T>
-T LinkedList<T>::RetrieveEnd() {
-  return tail->getData();
 }
 
 template <class T>

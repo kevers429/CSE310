@@ -15,20 +15,13 @@ AdjList::~AdjList() {
 }
 
 void AdjList::AddEdge(int u, int v) {
+  if(u == v)
+    return;
   adjList[u]->Append(v);
   adjList[v]->Append(u);
 }
 
-void AdjList::Print() {
-  for(int i = 0; i < vertices; i++) {
-    std::cout << i << " |";
-    for(int j = 0; j < adjList[i]->Length(); j++)
-      std::cout << " " << adjList[i]->Retrieve(j);
-    std::cout << std::endl;
-  }
-}
-
-int AdjList:: LargestDegree() {
+int AdjList::LargestDegree() {
   int largest = 0;
   for(int i = 0; i < vertices; i++) {
     if(largest < adjList[i]->Length())
@@ -37,33 +30,56 @@ int AdjList:: LargestDegree() {
   return largest;
 }
 
+std::string AdjList::RangeHelper(int i) {
+    std::ostringstream oss;
+    oss << i << "-" << LargestDegree();
+    return oss.str();
+}
+
 void AdjList::Histogram() {
-  int bins = 2*ceil(sqrt(vertices)) + 1;
-  int* count = new int[bins];
-  int width = 1;
-  int maxCount = 0;
-  for(int i = 0; i < vertices; i++) {
-    for(int j = 0; j < bins; j++) {
-      if(adjList[i]->Length() >= j * width && adjList[i]->Length() < (j + 1) * width) {
-        count[j]++;
-        break;
+  int count[vertices];
+  for(int i = 0; i < vertices; i++)
+    count[i] = 0;
+  bool smush = false;
+  for(int i = 0; i < vertices; i++)
+    count[adjList[i]->Length()]++;
+  for(int i = 1; i <= LargestDegree(); i++) {
+     if(!smush) {
+      if(count[i] == 0 && count[i+1] == 0 && count[i+2] == 0) {
+        smush = true;
+        std::cout << std::setw(10) << std::left << RangeHelper(i);
+      } else
+        std::cout << std::setw(10) << std::left << i;
+    }
+    for(int j = 0; j < count[i]; j++) {
+      if(count[i] > 100)  {
+        if(j % 20 == 0)
+          std::cout << "#";
       }
-    }
-  }
-  for(int i = 0; i < bins; i++) {
-    if(count[i] > maxCount)
-      maxCount = count[i];
-  }
-  std::cout << "bins: " << bins << " width: " << width << " maxCount: " << maxCount << std::endl;
-  for(int i = maxCount; i >= 0; i--) {
-    for(int j = 0; j < bins; j++) {
-      if(count[j] >= i)
-        std::cout << "*";
       else
-        std::cout << " ";
+        std::cout << "*";
     }
-    std::cout << std::endl;
+    if(!smush)
+      std::cout << std::endl;
   }
+  std::cout << std::endl;
+}
+
+void AdjList::Components() {
+  int components = 0;
+  bool* visited = new bool[vertices];
+  for(int i = 0; i < vertices; i++)
+    visited[i] = false;
+  for(int i = 0; i < vertices; i++) {
+    if(!visited[i]) {
+      int numNodes = 0;
+      DFS(i, &visited, numNodes);
+      components++;
+      std::cout << "component #" << components << ": " << numNodes << std::endl;
+    }
+  }
+  std::cout << "total components: " << components << std ::endl;
+  delete[] visited;
 }
 
 int AdjList::MinLen(int* Len, bool* visited) {
@@ -104,21 +120,4 @@ void AdjList::DFS(int u, bool** visited, int &numNodes) {
     if(!(*visited)[adjList[u]->Retrieve(i)])
       DFS(adjList[u]->Retrieve(i), visited, numNodes);
   }
-}
-
-void AdjList::Components() {
-  int components = 0;
-  bool* visited = new bool[vertices];
-  for(int i = 0; i < vertices; i++)
-    visited[i] = false;
-  for(int i = 0; i < vertices; i++) {
-    if(!visited[i]) {
-      int numNodes = 0;
-      DFS(i, &visited, numNodes);
-      components++;
-      std::cout << "component #" << components << ": " << numNodes << std::endl;
-    }
-  }
-  std::cout << "total components: " << components << std ::endl;
-  delete[] visited;
 }

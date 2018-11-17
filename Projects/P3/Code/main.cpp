@@ -22,7 +22,7 @@ int main() {
   for(int i = 0; i < numCommands; i++) {
     cin >> commandName;
     if(commandName == "degree-distribution") {
-      //network->Histogram();
+      network->Histogram();
     }
     else if(commandName == "components") {
       network->Components();

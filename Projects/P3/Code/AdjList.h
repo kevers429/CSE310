@@ -7,6 +7,8 @@
 #include <math.h>
 #include <climits>
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include "LinkedList.h"
 
 class AdjList {
@@ -14,17 +16,17 @@ class AdjList {
   protected:
     LinkedList<int>** adjList;
     int vertices;
+    std::string RangeHelper(int i);
+    int LargestDegree();
+    int MinLen(int* Len, bool* visited);
+    void DFS(int u, bool** visited, int &numNodes);
   public:
     AdjList(int vertices);
     ~AdjList();
     void AddEdge(int u, int v);
-    void Print();
-    int LargestDegree();
     void Histogram();
-    int MinLen(int* Len, bool* visited);
-    int ShortestPath(int u, int v);
-    void DFS(int u, bool** visited, int &numNodes);
     void Components();
+    int ShortestPath(int u, int v);
 };
 
 #endif
