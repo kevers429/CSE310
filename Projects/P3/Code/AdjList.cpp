@@ -1,27 +1,27 @@
 //AdjList methods
 #include "AdjList.h"
 
-AdjList::AdjList(int vertices) {
-  adjList = new LinkedList<int>*[vertices];
+AdjList::AdjList(int vertices) { //Default constructor
+  adjList = new LinkedList<int>*[vertices]; //creates array of linked lists
   for(int i = 0; i < vertices; i++)
     adjList[i] = new LinkedList<int>();
   this->vertices = vertices;
 }
 
-AdjList::~AdjList() {
+AdjList::~AdjList() { //DESTORY!
   for(int i = 0; i < vertices; i++)
-    adjList[i]->Empty();
+    adjList[i]->Empty(); //no memory leaks here
   vertices = 0;
 }
 
-void AdjList::AddEdge(int u, int v) {
-  if(u == v)
+void AdjList::AddEdge(int u, int v) { //adds new edge to adjList
+  if(u == v) //self loops are a no no
     return;
   adjList[u]->Append(v);
   adjList[v]->Append(u);
 }
 
-int AdjList::LargestDegree() {
+int AdjList::LargestDegree() { //returns the largest degree vertex
   int largest = 0;
   for(int i = 0; i < vertices; i++) {
     if(largest < adjList[i]->Length())
@@ -30,22 +30,22 @@ int AdjList::LargestDegree() {
   return largest;
 }
 
-std::string AdjList::RangeHelper(int i) {
+std::string AdjList::RangeHelper(int i) { //only for standardizing width of output
     std::ostringstream oss;
     oss << i << "-" << LargestDegree();
     return oss.str();
 }
 
 void AdjList::Histogram() {
-  int count[vertices];
+  int count[vertices]; //holds the number of verticies with degree equal to its index
   for(int i = 0; i < vertices; i++)
     count[i] = 0;
   bool smush = false;
   for(int i = 0; i < vertices; i++)
-    count[adjList[i]->Length()]++;
+    count[adjList[i]->Length()]++; //add it to the list!
   for(int i = 1; i <= LargestDegree(); i++) {
      if(!smush) {
-      if(count[i] == 0 && count[i+1] == 0 && count[i+2] == 0) {
+      if(count[i] == 0 && count[i+1] == 0 && count[i+2] == 0) { //three empty bins in a row
         smush = true;
         std::cout << std::setw(10) << std::left << RangeHelper(i);
       } else
@@ -53,13 +53,13 @@ void AdjList::Histogram() {
     }
     for(int j = 0; j < count[i]; j++) {
       if(count[i] > 100)  {
-        if(j % 20 == 0)
+        if(j % 20 == 0) //if more that 100 use # to represent groups of 20
           std::cout << "#";
       }
       else
         std::cout << "*";
     }
-    if(!smush)
+    if(!smush) //dont put a newline, if we're smushing
       std::cout << std::endl;
   }
   std::cout << std::endl;
@@ -67,14 +67,14 @@ void AdjList::Histogram() {
 
 void AdjList::Components() {
   int components = 0;
-  bool* visited = new bool[vertices];
+  bool* visited = new bool[vertices]; //keeps track of we're we've been
   for(int i = 0; i < vertices; i++)
     visited[i] = false;
   for(int i = 0; i < vertices; i++) {
-    if(!visited[i]) {
+    if(!visited[i]) { //new vertex
       int numNodes = 0;
-      DFS(i, &visited, numNodes);
-      components++;
+      DFS(i, &visited, numNodes); //do a depth first search to find all the verticies we can
+      components++; //for each DFS there is anotehr component
       std::cout << "component #" << components << ": " << numNodes << std::endl;
     }
   }
@@ -82,11 +82,21 @@ void AdjList::Components() {
   delete[] visited;
 }
 
-int AdjList::MinLen(int* Len, bool* visited) {
+
+void AdjList::DFS(int u, bool** visited, int &numNodes) {
+  (*visited)[u] = true;
+  numNodes++;
+  for(int i = 0; i < adjList[u]->Length(); i++) { //for each adjacent vertex
+    if(!(*visited)[adjList[u]->Retrieve(i)]) //if we haven't been yet, GO!
+      DFS(adjList[u]->Retrieve(i), visited, numNodes);
+  }
+}
+
+int AdjList::MinLen(int* Len, bool* visited) { //returns the minimum value index in Len array that hasn't been visited
   int min = INT_MAX;
   int pos;
   for(int i = 0; i < vertices; i++) {
-    if(visited[i] == false && Len[i] < min) {
+    if(visited[i] == false && Len[i] < min) { //smaller and not visited
       min = Len[i];
       pos = i;
     }
@@ -94,62 +104,53 @@ int AdjList::MinLen(int* Len, bool* visited) {
   return pos;
 }
 
-int AdjList::ShortestPath(int u, int v) {
-  int Len[vertices];
-  bool visited[vertices];
+int AdjList::ShortestPath(int u, int v) { //returns length of shortest path in adjList
+  int Len[vertices]; //shortest path to each vertex
+  bool visited[vertices]; //keeps track of where we've been
   for(int i = 0; i < vertices; i++) {
     visited[i] = false;
-    Len[i] = INT_MAX;
+    Len[i] = INT_MAX; //begin with infinity
   }
-  Len[u] = 0;
-  while(!visited[v]) {
-    int s = MinLen(Len, visited);
+  Len[u] = 0; //shortest path to itself is 0
+  while(!visited[v]) { //until we reach our desired vertex
+    int s = MinLen(Len, visited); //find shortest unvisited length
     visited[s] = true;
     for(int i = 0; i < vertices; i++) {
-      if(!visited[i] && Len[s] + 1 < Len[i] && adjList[s]->Contains(i))
+      if(!visited[i] && Len[s] + 1 < Len[i] && adjList[s]->Contains(i)) //update shortest paths if new shortest found
         Len[i] = Len[s] + 1;
     }
   }
   return Len[v];
 }
 
-void AdjList::DFS(int u, bool** visited, int &numNodes) {
-  (*visited)[u] = true;
-  numNodes++;
-  for(int i = 0; i < adjList[u]->Length(); i++) {
-    if(!(*visited)[adjList[u]->Retrieve(i)])
-      DFS(adjList[u]->Retrieve(i), visited, numNodes);
-  }
-}
-
 int AdjList::Diameter() {
   int** dist = new int*[vertices];
   for(int i = 0; i < vertices; i++)
-    dist[i] = new int[vertices];
+    dist[i] = new int[vertices]; //declare it this way to avoid memory leaks
   int max = 0;
   for(int i = 0; i < vertices; i++) {
     for(int j = 0; j < vertices; j++)
-      dist[i][j] = INT_MAX;
+      dist[i][j] = INT_MAX; //set all to infinity
     for(int j = 0; j < adjList[i]->Length(); j++)
-      dist[i][adjList[i]->Retrieve(j)] = 1;
+      dist[i][adjList[i]->Retrieve(j)] = 1; //for each adjacent vertex put a one in the right place
   }
   for(int i = 0; i < vertices; i++)
-      dist[i][i] = 0;
+      dist[i][i] = 0; //0's on the diagonal because distance to oneself is 0
   for(int k = 0; k < vertices; k++) {
     for(int i = 0; i < vertices; i++) {
       for(int j = 0; j < vertices; j++) {
-        if(dist[i][j] > dist[i][k] + dist[k][j])
+        if(dist[i][j] > dist[i][k] + dist[k][j]) //if shorter intermediary path update dist
           dist[i][j] = dist[i][k] + dist[k][j];
       }
     }
   }
-  for(int i = 0; i < vertices; i++) {
+  for(int i = 0; i < vertices; i++) { //loops through all to find the biggest
     for(int j = 0; j < vertices; j++) {
       if(dist[i][j] > max)
         max = dist[i][j];
     }
   }
-  for(int i = 0; i < vertices; i++)
+  for(int i = 0; i < vertices; i++) //clean up after ourselves
     delete[] dist[i];
   return max;
 }
