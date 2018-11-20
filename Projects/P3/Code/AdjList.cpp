@@ -1,16 +1,18 @@
 //AdjList methods
 #include "AdjList.h"
 
-AdjList::AdjList(int vertices) { //Default constructor
+AdjList::AdjList(int vertices, int edges) { //Default constructor
   adjList = new LinkedList<int>*[vertices]; //creates array of linked lists
   for(int i = 0; i < vertices; i++)
     adjList[i] = new LinkedList<int>();
   this->vertices = vertices;
+  this->edges = edges;
 }
 
 AdjList::~AdjList() { //DESTORY!
   for(int i = 0; i < vertices; i++)
-    adjList[i]->Empty(); //no memory leaks here
+    delete adjList[i]; //no memory leaks here
+  delete[] adjList;
   vertices = 0;
 }
 
@@ -153,4 +155,13 @@ int AdjList::Diameter() {
   for(int i = 0; i < vertices; i++) //clean up after ourselves
     delete[] dist[i];
   return max;
+}
+
+void AdjList::Kruskal() {
+  AdjList tmpList = AdjList(vertices, vertices - 1);
+  for(int i = 0; i < vertices; i++) {
+    for(int j = 0; j < adjList[i]->Length(); j++)
+      if(adjList[adjList[i]->Retrieve(j)] == NULL)
+        tmpList->AddEdge(i, adjList[i]->Retrieve(j));
+  }
 }

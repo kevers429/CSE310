@@ -13,7 +13,7 @@ string commandName;
 
 int main() {
   cin >> vertices >> edges;
-  AdjList* network = new AdjList(vertices);
+  AdjList* network = new AdjList(vertices, edges);
   for(int i = 0; i < edges; i++) {
     cin >> u >> v;
     network->AddEdge(u, v);
@@ -31,6 +31,9 @@ int main() {
     }
     else if(commandName == "diameter")
       cout << network->Diameter() << endl;
+    else if(commandName == "spanning-tree")
+      network->Kruskal();
   }
+  delete network;
   return 0;
 }

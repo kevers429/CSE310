@@ -15,19 +15,20 @@ class AdjList {
   friend class LinkedList<int>;
   protected:
     LinkedList<int>** adjList;
-    int vertices;
+    int vertices, edges;
     std::string RangeHelper(int i);
     int LargestDegree();
     int MinLen(int* Len, bool* visited);
     void DFS(int u, bool** visited, int &numNodes);
   public:
-    AdjList(int vertices);
+    AdjList(int vertices, int edges);
     ~AdjList();
     void AddEdge(int u, int v);
     void Histogram();
     void Components();
     int ShortestPath(int u, int v);
     int Diameter();
+    void Kruskal();
 };
 
 #endif
