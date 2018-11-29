@@ -19,8 +19,8 @@ AdjList::~AdjList() { //DESTORY!
 void AdjList::AddEdge(int u, int v) { //adds new edge to adjList
   if(u == v) //self loops are a no no
     return;
-  adjList[u]->Append(v);
-  adjList[v]->Append(u);
+  this->adjList[u]->Append(v);
+  this->adjList[v]->Append(u);
 }
 
 int AdjList::LargestDegree() { //returns the largest degree vertex
@@ -158,10 +158,12 @@ int AdjList::Diameter() {
 }
 
 void AdjList::Kruskal() {
-  AdjList tmpList = AdjList(vertices, vertices - 1);
+  AdjList* tmpList = new AdjList(vertices, vertices - 1);
   for(int i = 0; i < vertices; i++) {
     for(int j = 0; j < adjList[i]->Length(); j++)
-      if(adjList[adjList[i]->Retrieve(j)] == NULL)
+      if(tmpList->adjList[adjList[i]->Retrieve(j)]->Length() == 0) {
         tmpList->AddEdge(i, adjList[i]->Retrieve(j));
+        std::cout << i << "--" << adjList[i]->Retrieve(j) << " " << std::endl;
+    }
   }
 }
