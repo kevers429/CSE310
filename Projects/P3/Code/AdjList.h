@@ -26,7 +26,7 @@ class AdjList {
     void AddEdge(int u, int v);
     void Histogram();
     void Components();
-    int ShortestPath(int u, int v);
+    void ShortestPath(int u, int v);
     int Diameter();
     void Kruskal();
 };

@@ -77,7 +77,7 @@ void AdjList::Components() {
       int numNodes = 0;
       DFS(i, &visited, numNodes); //do a depth first search to find all the verticies we can
       components++; //for each DFS there is anotehr component
-      std::cout << "component #" << components << ": " << numNodes << std::endl;
+      std::cout << "component #" << components << " size: " << numNodes << std::endl;
     }
   }
   std::cout << "total components: " << components << std ::endl;
@@ -98,7 +98,7 @@ int AdjList::MinLen(int* Len, bool* visited) { //returns the minimum value index
   int min = INT_MAX;
   int pos;
   for(int i = 0; i < vertices; i++) {
-    if(visited[i] == false && Len[i] < min) { //smaller and not visited
+    if(visited[i] == false && Len[i] <= min) { //smaller and not visited
       min = Len[i];
       pos = i;
     }
@@ -106,7 +106,7 @@ int AdjList::MinLen(int* Len, bool* visited) { //returns the minimum value index
   return pos;
 }
 
-int AdjList::ShortestPath(int u, int v) { //returns length of shortest path in adjList
+void AdjList::ShortestPath(int u, int v) { //returns length of shortest path in adjList
   int Len[vertices]; //shortest path to each vertex
   bool visited[vertices]; //keeps track of where we've been
   for(int i = 0; i < vertices; i++) {
@@ -114,15 +114,20 @@ int AdjList::ShortestPath(int u, int v) { //returns length of shortest path in a
     Len[i] = INT_MAX; //begin with infinity
   }
   Len[u] = 0; //shortest path to itself is 0
-  while(!visited[v]) { //until we reach our desired vertex
+  for(int i = 0; i < vertices; i++) { //until we reach our desired vertex
+    if(visited[v])
+      break;
     int s = MinLen(Len, visited); //find shortest unvisited length
     visited[s] = true;
-    for(int i = 0; i < vertices; i++) {
-      if(!visited[i] && Len[s] + 1 < Len[i] && adjList[s]->Contains(i)) //update shortest paths if new shortest found
-        Len[i] = Len[s] + 1;
+    for(int j = 0; j < vertices; j++) {
+      if(!visited[j] && Len[s] + 1 < Len[j] && adjList[s]->Contains(j) && Len[s] != INT_MAX) //update shortest paths if new shortest found
+        Len[j] = Len[s] + 1;
     }
   }
-  return Len[v];
+  if(Len[v] != INT_MAX)
+    std::cout << "shortest-path: " << Len[v] << std::endl;
+  else
+    std::cout << "no path between " << u << " and " << v << std::endl;
 }
 
 int AdjList::Diameter() {
@@ -141,14 +146,14 @@ int AdjList::Diameter() {
   for(int k = 0; k < vertices; k++) {
     for(int i = 0; i < vertices; i++) {
       for(int j = 0; j < vertices; j++) {
-        if(dist[i][j] > dist[i][k] + dist[k][j]) //if shorter intermediary path update dist
-          dist[i][j] = dist[i][k] + dist[k][j];
+        if(dist[i][k] != INT_MAX && dist[k][j] != INT_MAX  && dist[i][j] > dist[i][k] + dist[k][j]) //if shorter intermediary path update dist
+          dist[i][j] = dist[i][k] + dist[k][j]; //avoid integer overflow
       }
     }
   }
   for(int i = 0; i < vertices; i++) { //loops through all to find the biggest
     for(int j = 0; j < vertices; j++) {
-      if(dist[i][j] > max)
+      if(dist[i][j] > max && dist[i][j] != INT_MAX)
         max = dist[i][j];
     }
   }
@@ -158,12 +163,13 @@ int AdjList::Diameter() {
 }
 
 void AdjList::Kruskal() {
-  AdjList* tmpList = new AdjList(vertices, vertices - 1);
+  AdjList* tmpList = new AdjList(vertices, vertices - 1); //stores adjList of MST
   for(int i = 0; i < vertices; i++) {
     for(int j = 0; j < adjList[i]->Length(); j++)
-      if(tmpList->adjList[adjList[i]->Retrieve(j)]->Length() == 0) {
-        tmpList->AddEdge(i, adjList[i]->Retrieve(j));
+      if(tmpList->adjList[adjList[i]->Retrieve(j)]->Length() == 0) { //if destination unvisited
+        tmpList->AddEdge(i, adjList[i]->Retrieve(j)); //add edge to MST
         std::cout << i << "--" << adjList[i]->Retrieve(j) << " " << std::endl;
     }
   }
+  delete tmpList;
 }

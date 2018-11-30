@@ -27,10 +27,10 @@ int main() {
       network->Components();
     else if(commandName == "shortest-path") {
       cin >> u >> v;
-      cout << network->ShortestPath(u, v) << endl;
+      network->ShortestPath(u, v);
     }
     else if(commandName == "diameter")
-      cout << network->Diameter() << endl;
+      cout << "diameter: " << network->Diameter() << endl;
     else if(commandName == "spanning-tree")
       network->Kruskal();
   }
