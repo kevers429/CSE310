@@ -1,5 +1,5 @@
 //Kevin Shannon
-//usage: ./p2 < file
+//usage: ./p3 < file
 
 #include <iostream>
 #include <string.h>

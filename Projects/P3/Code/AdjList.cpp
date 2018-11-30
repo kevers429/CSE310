@@ -158,7 +158,8 @@ int AdjList::Diameter() {
     }
   }
   for(int i = 0; i < vertices; i++) //clean up after ourselves
-    delete[] dist[i];
+    delete dist[i];
+  delete[] dist;
   return max;
 }
 
